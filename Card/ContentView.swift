@@ -29,6 +29,10 @@ enum SwipeDirection {
 }
 
 struct ContentView: View {
+    // MARK: - Theme
+    /// ObservedObject automatically updates the view when theme changes
+    @StateObject private var themeManager = ThemeManager.shared
+
     @State private var cards: [CardModel] = [
         CardModel(color: .white, media: .image(name: "IMG_0478"), title: "First Drug", subtitle: "The first cup of coffee is magic, a quiet chat with myself before the world begins. I illustrated this on Procreate: just me and my coffee, sitting, sipping, and greeting the morning like old friends!"),
         CardModel(color: .black, media: .image(name: "IMG_0479"), title: "Fell for Her Again", subtitle: "One evening, I saw my girlfriend reading, completely lost in her world. Her focus, her quiet quirks, her calm. It made me fall for her all over again. I illustrated that moment on Procreate, lovingly"),
@@ -63,50 +67,51 @@ struct ContentView: View {
     ]
     
 
+    /// Convenience accessor for the current theme
+    private var theme: Theme {
+        themeManager.currentTheme
+    }
+
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(stops: [
-                    .init(color: Color(hex: "ECECEC"), location: 0.49),
-                    .init(color: Color(hex: "FFFFFF"), location: 1.0)
-                ]),
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-            .ignoresSafeArea()
+            // Animated gradient background (Metal shader from Any Distance)
+            AnimatedGradientView(colorPalette: 4)
+                .ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 0) {
-                // Cross button
+                // Top bar with home button
                 HStack {
+                    // Home button
                     Button(action: {
-                        // Action for cross button
+                        // Action for home button
                     }) {
-                        Image(systemName: "xmark")
+                        Image(systemName: "house.fill")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 8, height: 8)
-                            .foregroundColor(.black)
-                            .frame(width: 40, height: 40)
-                            .background(Color(hex: "FAF8F8"))
-                            .clipShape(Circle())
+                            .frame(width: 14, height: 14)
+                            .foregroundColor(theme.foreground)
                     }
+                    .frame(width: 40, height: 40)
+                    .background(GlassButton(isDark: true))
+                    .buttonStyle(.plain)
+
                     Spacer()
                 }
                 .padding(.top, 24)
-                .padding(.leading, 16)
-                // Title
+                .padding(.horizontal, 16)
+                // Title - colors adapt to theme
                 if let currentCard = cards.first {
                     Text(currentCard.title)
                         .font(.system(size: 36, design: .serif))
                         .fontWeight(.bold)
-                        .foregroundColor(Color(hex: "222222"))
+                        .foregroundColor(theme.foreground)
                         .padding(.top, 32)
                         .padding(.leading, 16)
 
                     Text(currentCard.subtitle)
                         .font(.custom("Inter", size: 16).weight(.regular))
-                        .foregroundColor(Color(hex: "717171"))
-                        .padding(.top, 8)
+                        .foregroundColor(theme.secondaryForeground)
+                        .padding(.top,   8)
                         .padding(.leading, 16)
                         .padding(.trailing, 24)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -114,7 +119,7 @@ struct ContentView: View {
                 }
                 Spacer()
                 // Centered card stack
-                HStack {
+                HStack {                                                                                                                                            
                     Spacer()
                     ZStack {
                         ForEach(Array(cards.enumerated()), id: \.1.id) { idx, card in
@@ -318,7 +323,7 @@ struct FullScreenMediaView: View {
                         }
                     }
                 
-                // Back button overlay matching main page style
+                // Back button overlay with Liquid Glass effect
                 VStack {
                     HStack {
                         Button(action: {
@@ -328,11 +333,11 @@ struct FullScreenMediaView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 8, height: 8)
-                                .foregroundColor(.black)
-                                .frame(width: 40, height: 40)
-                                .background(Color(hex: "FAF8F8"))
-                                .clipShape(Circle())
+                                .foregroundColor(.white)
                         }
+                        .frame(width: 40, height: 40)
+                        .background(GlassButton())
+                        .buttonStyle(.plain)
                         .padding(.top, 88)
                         .padding(.leading, 16)
                         Spacer()
@@ -430,6 +435,50 @@ struct FullScreenMediaView: View {
 
     static func resetState() {
         // This is a placeholder. You may need to use a Binding or pass a reset closure to actually reset the state in the parent.
+    }
+}
+
+// Custom Glass Button Effect for iOS compatibility
+struct GlassButton: View {
+    var isDark: Bool = false
+
+    var body: some View {
+        ZStack {
+            // Base blur effect - adapts to theme
+            BlurView(style: isDark ? .systemUltraThinMaterialDark : .systemThinMaterial)
+                .clipShape(Circle())
+
+            // Subtle gradient overlay for depth
+            Circle()
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            (isDark ? Color.white : Color.white).opacity(0.3),
+                            (isDark ? Color.white : Color.white).opacity(0.1)
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+
+            // Border for definition
+            Circle()
+                .strokeBorder(Color.white.opacity(isDark ? 0.15 : 0.2), lineWidth: 0.5)
+        }
+    }
+}
+
+// UIViewRepresentable for UIVisualEffectView
+struct BlurView: UIViewRepresentable {
+    let style: UIBlurEffect.Style
+    
+    func makeUIView(context: Context) -> UIVisualEffectView {
+        let view = UIVisualEffectView(effect: UIBlurEffect(style: style))
+        return view
+    }
+    
+    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
+        uiView.effect = UIBlurEffect(style: style)
     }
 }
 
