@@ -274,7 +274,7 @@ struct AboutMeView: View {
             Color(hex: "0D0D0D").ignoresSafeArea()
 
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .center, spacing: 0) {
                     // Header
                     HStack {
                         Spacer()
@@ -289,102 +289,85 @@ struct AboutMeView: View {
                         .background(GlassButton(isDark: true))
                         .buttonStyle(.plain)
                     }
-                    .padding(.top, 16)
+                    .padding(.top, 24)
+                    .padding(.bottom, 16)
+
+                    // Profile photo
+                    Image("AnkurPhoto")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 120, height: 120)
+                        .clipShape(RoundedRectangle(cornerRadius: 100, style: .continuous))
+                        .padding(.bottom, 16)
 
                     // Name & role
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Ankur Yadav")
-                            .font(.system(size: 32, design: .serif))
+//                    Text("Ankur Yadav")
+//                        .font(.system(size: 32, design: .serif))
+//                        .fontWeight(.bold)
+//                        .foregroundColor(.white)
+
+//                    Text("Senior Product Designer")
+//                        .font(.custom("Inter", size: 16).weight(.medium))
+//                        .foregroundColor(Color.white.opacity(0.7))
+//                        .padding(.top, 8)
+                        .padding(.bottom, 40)
+
+                    // Tools - styled like Any Distance's "Special Thanks" section
+                    VStack(alignment: .center, spacing: 6) {
+                        Text("Stuff I use")
+                            .font(.system(size: 16, design: .serif))
                             .fontWeight(.bold)
                             .foregroundColor(.white)
+                            .padding(.bottom, 4)
 
-                        Text("Senior Product Designer")
-                            .font(.custom("Inter", size: 16).weight(.medium))
-                            .foregroundColor(Color.white.opacity(0.6))
-                    }
-
-                    // Bio
-                    Text("I am currently working at PhysicsWallah and designing experience for their AI Products. Open to Freelance")
-                        .font(.custom("Inter", size: 15).weight(.regular))
-                        .foregroundColor(Color.white.opacity(0.75))
-                        .lineSpacing(5)
-
-                    // Tools bento grid
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("What I Use")
-                            .font(.custom("Inter", size: 14).weight(.semibold))
+                        Text("Procreate, Adobe Illustrator, Adobe Photoshop, After Effects, Figma, Xcode, SwiftUI, Framer, Procreate Dreams, Cursor, Claude, Lovart, Gemini")
+                            .font(.system(size: 12, weight: .regular, design: .monospaced))
                             .foregroundColor(Color.white.opacity(0.5))
-                            .textCase(.uppercase)
-                            .kerning(1.2)
-
-                        let spacing: CGFloat = 10
-
-                        // Row 1
-                        HStack(spacing: spacing) {
-                            BentoToolCell(assetIcon: "Procreate", name: "Procreate", gradientColors: [
-                                UIColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1),
-                                UIColor(red: 0.15, green: 0.08, blue: 0.0, alpha: 1),
-                                UIColor(red: 0.05, green: 0.05, blue: 0.05, alpha: 1),
-                                UIColor(red: 0.12, green: 0.06, blue: 0.0, alpha: 1)
-                            ])
-                            BentoToolCell(assetIcon: "Adobe Illustrator", name: "Illustrator", gradientColors: [
-                                UIColor(red: 0.15, green: 0.06, blue: 0.0, alpha: 1),
-                                UIColor(red: 0.1, green: 0.04, blue: 0.0, alpha: 1),
-                                UIColor(red: 0.08, green: 0.03, blue: 0.0, alpha: 1),
-                                UIColor(red: 0.12, green: 0.05, blue: 0.0, alpha: 1)
-                            ])
-                            BentoToolCell(assetIcon: "Adobe Photoshop", name: "Photoshop", gradientColors: [
-                                UIColor(red: 0.0, green: 0.05, blue: 0.15, alpha: 1),
-                                UIColor(red: 0.0, green: 0.08, blue: 0.12, alpha: 1),
-                                UIColor(red: 0.0, green: 0.03, blue: 0.1, alpha: 1),
-                                UIColor(red: 0.0, green: 0.06, blue: 0.14, alpha: 1)
-                            ])
-                        }
-
-                        // Row 2
-                        HStack(spacing: spacing) {
-                            BentoToolCell(assetIcon: "After Effects", name: "After Effects", gradientColors: [
-                                UIColor(red: 0.08, green: 0.04, blue: 0.15, alpha: 1),
-                                UIColor(red: 0.12, green: 0.06, blue: 0.18, alpha: 1),
-                                UIColor(red: 0.05, green: 0.02, blue: 0.1, alpha: 1),
-                                UIColor(red: 0.1, green: 0.05, blue: 0.14, alpha: 1)
-                            ])
-                            BentoToolCell(assetIcon: "Figma", name: "Figma", gradientColors: [
-                                UIColor(red: 0.1, green: 0.02, blue: 0.08, alpha: 1),
-                                UIColor(red: 0.06, green: 0.0, blue: 0.12, alpha: 1),
-                                UIColor(red: 0.08, green: 0.01, blue: 0.06, alpha: 1),
-                                UIColor(red: 0.05, green: 0.0, blue: 0.1, alpha: 1)
-                            ])
-                            BentoToolCell(assetIcon: "Xcode", name: "Xcode", gradientColors: [
-                                UIColor(red: 0.0, green: 0.06, blue: 0.15, alpha: 1),
-                                UIColor(red: 0.0, green: 0.1, blue: 0.12, alpha: 1),
-                                UIColor(red: 0.0, green: 0.04, blue: 0.1, alpha: 1),
-                                UIColor(red: 0.0, green: 0.08, blue: 0.14, alpha: 1)
-                            ])
-                        }
+                            .multilineTextAlignment(.center)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 40)
 
-                    // Links section
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Find Me")
-                            .font(.custom("Inter", size: 14).weight(.semibold))
+                    // Books I have read
+                    VStack(alignment: .center, spacing: 6) {
+                        Text("Books I have read")
+                            .font(.system(size: 16, design: .serif))
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .padding(.bottom, 4)
+
+                        Text("Prince of Persia, Kafka on the Shore, The Alchemist, The Fountainhead, To Kill a Mockingbird, Moth Smoke, Homo Sapiens, Homo Deus, Kite Runner, Creative Selection, Exit West, My Turn, Steal Like An Artist, Show Your Work, Steve Jobs")
+                            .font(.system(size: 12, weight: .regular, design: .monospaced))
                             .foregroundColor(Color.white.opacity(0.5))
-                            .textCase(.uppercase)
-                            .kerning(1.2)
-
-                        VStack(spacing: 0) {
-                            AboutMeLink(icon: "envelope.fill", label: "Email", value: "kurkure15@gmail.com")
-                            Divider().background(Color.white.opacity(0.1))
-                            AboutMeLink(icon: "link", label: "GitHub", value: "github.com/kurkure15")
-                        }
-                        .background(
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .fill(Color.white.opacity(0.06))
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .multilineTextAlignment(.center)
                     }
+                    .frame(maxWidth: .infinity)
 
-                    Spacer(minLength: 40)
+                    // Footer
+                    ZStack {
+                        // Signature background image
+                        Image("Signature")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(.white)
+                            .opacity(0.05)
+                            .frame(maxWidth: .infinity)
+
+                        // Text overlay
+//                        VStack(spacing: 8) {
+//                            Text("Ankur Yadav")
+//                                .font(.system(size: 48, weight: .heavy, design: .default))
+//                                .foregroundColor(.white)
+//                                .italic()
+//
+//                            Text("Senior Product Designer")
+//                                .font(.custom("Inter", size: 14).weight(.regular))
+//                                .foregroundColor(Color.white.opacity(0.5))
+//                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 80)
+                    .padding(.bottom, 60)
                 }
                 .padding(.horizontal, 20)
             }
@@ -395,70 +378,97 @@ struct AboutMeView: View {
     }
 }
 
-// MARK: - About Me Helpers
+/// Flickering text view inspired by Any Distance's "Made With Soul" UI
+/// Uses a UIKit view for the flickering alpha animation, with a coral glow effect
+struct FlickeringTextView: UIViewRepresentable {
+    let text: String
 
-struct AboutMeLink: View {
-    let icon: String
-    let label: String
-    let value: String
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 14))
-                .foregroundColor(Color.white.opacity(0.5))
-                .frame(width: 20)
-
-            Text(label)
-                .font(.custom("Inter", size: 14).weight(.medium))
-                .foregroundColor(.white)
-
-            Spacer()
-
-            Text(value)
-                .font(.custom("Inter", size: 13).weight(.regular))
-                .foregroundColor(Color.white.opacity(0.5))
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+    func makeUIView(context: Context) -> FlickeringGlowLabel {
+        let label = FlickeringGlowLabel()
+        label.configure(text: text)
+        return label
     }
+
+    func updateUIView(_ uiView: FlickeringGlowLabel, context: Context) {}
 }
 
-/// Bento grid cell for a tool with animated gradient background
-struct BentoToolCell: View {
-    let assetIcon: String
-    let name: String
-    let gradientColors: [UIColor]
+/// UIView with a glowing text label and flickering animation
+final class FlickeringGlowLabel: UIView {
+    private let textLabel = UILabel()
+    private let glowLabel = UILabel()
 
-    var body: some View {
-        VStack(spacing: 6) {
-            Image(assetIcon)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 30)
+    func configure(text: String) {
+        backgroundColor = .clear
 
-            Text(name)
-                .font(.custom("Inter", size: 10).weight(.medium))
-                .foregroundColor(Color.white.opacity(0.8))
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
+        // Glow layer (blurred copy behind)
+        glowLabel.text = text
+        glowLabel.numberOfLines = 0
+        glowLabel.textColor = UIColor(red: 0.95, green: 0.45, blue: 0.35, alpha: 0.6)
+        glowLabel.font = UIFont.systemFont(ofSize: 13, weight: .medium)
+        glowLabel.textAlignment = .center
+        glowLabel.translatesAutoresizingMaskIntoConstraints = false
+        glowLabel.layer.shadowColor = UIColor(red: 0.95, green: 0.45, blue: 0.35, alpha: 1.0).cgColor
+        glowLabel.layer.shadowRadius = 12
+        glowLabel.layer.shadowOpacity = 0.8
+        glowLabel.layer.shadowOffset = .zero
+        addSubview(glowLabel)
+
+        // Main text label
+        textLabel.text = text
+        textLabel.numberOfLines = 0
+        textLabel.textColor = UIColor(red: 0.95, green: 0.5, blue: 0.4, alpha: 1.0)
+        textLabel.font = UIFont.systemFont(ofSize: 13, weight: .medium)
+        textLabel.textAlignment = .center
+        textLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(textLabel)
+
+        NSLayoutConstraint.activate([
+            glowLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            glowLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            glowLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            glowLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+            textLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            textLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            textLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
+            textLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
+        ])
+
+        alpha = 0.0
+    }
+
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        guard superview != nil else { return }
+        startGlowing()
+        startFlickering()
+    }
+
+    override var intrinsicContentSize: CGSize {
+        CGSize(width: UIView.noIntrinsicMetric, height: 60)
+    }
+
+    private func startGlowing() {
+        let duration = TimeInterval.random(in: 0.6...1.2)
+        let target: CGFloat = (alpha < 0.9) ? 1.0 : 0.7
+        UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseInOut, .beginFromCurrentState], animations: {
+            self.alpha = target
+        }) { [weak self] finished in
+            if finished { self?.startGlowing() }
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 90)
-        .background(
-            ZStack {
-                AnimatedGradientView(uiColors: gradientColors)
+    }
 
-                // Subtle overlay for depth
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color.black.opacity(0.15))
+    private func startFlickering() {
+        let bright: CGFloat = 1.0
+        let dim: CGFloat = 0.3
+        let newAlpha: CGFloat = (alpha < bright) ? bright : dim
+        alpha = newAlpha
 
-                // Border
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 0.5)
-            }
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        let delay: TimeInterval = newAlpha < bright
+            ? TimeInterval.random(in: 0.02...0.05)
+            : TimeInterval.random(in: 0.1...0.6)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+            self?.startFlickering()
+        }
     }
 }
 
@@ -467,7 +477,7 @@ struct CardView: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             // Card background and shadow
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
+            RoundedRectangle(cornerRadius: 32, style: .continuous)
                 .fill(card.color)
                 .shadow(color: Color.black.opacity(0.06), radius: 8, x: 0, y: 4)
             // Card media, clipped to the same shape
