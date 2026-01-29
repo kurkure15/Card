@@ -315,8 +315,7 @@ struct AboutMeView: View {
                     // Tools - styled like Any Distance's "Special Thanks" section
                     VStack(alignment: .center, spacing: 6) {
                         Text("Stuff I use")
-                            .font(.system(size: 16, design: .serif))
-                            .fontWeight(.bold)
+                            .font(.custom("Source Serif 4", size: 16).weight(.bold))
                             .foregroundColor(.white)
                             .padding(.bottom, 4)
 
@@ -328,11 +327,25 @@ struct AboutMeView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.bottom, 40)
 
+                    // Devices and Games
+                    VStack(alignment: .center, spacing: 6) {
+                        Text("Devices and Games")
+                            .font(.custom("Source Serif 4", size: 16).weight(.bold))
+                            .foregroundColor(.white)
+                            .padding(.bottom, 4)
+
+                        Text("Mac Mini, MacBook Pro 15, AirPods Pro, iPhone 15, Apple Watch 7, iPad Pro, PS5, FC26, Fortnite, Forza Horizon 5, Spiderman: Miles Morales, Arc Raiders")
+                            .font(.system(size: 12, weight: .regular, design: .monospaced))
+                            .foregroundColor(Color.white.opacity(0.5))
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.bottom, 40)
+
                     // Books I have read
                     VStack(alignment: .center, spacing: 6) {
                         Text("Books I have read")
-                            .font(.system(size: 16, design: .serif))
-                            .fontWeight(.bold)
+                            .font(.custom("Source Serif 4", size: 16).weight(.bold))
                             .foregroundColor(.white)
                             .padding(.bottom, 4)
 
@@ -343,34 +356,28 @@ struct AboutMeView: View {
                     }
                     .frame(maxWidth: .infinity)
 
-                    // Footer
-                    ZStack {
-                        // Signature background image
-                        Image("Signature")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.white)
-                            .opacity(0.05)
-                            .frame(maxWidth: .infinity)
-
-                        // Text overlay
-//                        VStack(spacing: 8) {
-//                            Text("Ankur Yadav")
-//                                .font(.system(size: 48, weight: .heavy, design: .default))
-//                                .foregroundColor(.white)
-//                                .italic()
-//
-//                            Text("Senior Product Designer")
-//                                .font(.custom("Inter", size: 14).weight(.regular))
-//                                .foregroundColor(Color.white.opacity(0.5))
-//                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 80)
-                    .padding(.bottom, 60)
+                    // Made with Love by Ankur
+                    FlickeringTextView(text: "Made with\nLove by\nAnkur")
+                        .frame(height: 60)
+                        .padding(.top, 48)
+                        .padding(.bottom, 20)
                 }
                 .padding(.horizontal, 20)
             }
+
+            // Sticky footer - Signature pinned to bottom
+            VStack {
+                Spacer()
+                Image("Signature")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(.white)
+                    .opacity(0.05)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 10)
+            }
+            .allowsHitTesting(false)
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
@@ -404,7 +411,7 @@ final class FlickeringGlowLabel: UIView {
         glowLabel.text = text
         glowLabel.numberOfLines = 0
         glowLabel.textColor = UIColor(red: 0.95, green: 0.45, blue: 0.35, alpha: 0.6)
-        glowLabel.font = UIFont.systemFont(ofSize: 13, weight: .medium)
+        glowLabel.font = UIFont(name: "SourceSerif4Roman-Regular", size: 13) ?? UIFont(name: "SourceSerif418pt-Bold", size: 13) ?? UIFont.systemFont(ofSize: 13, weight: .medium)
         glowLabel.textAlignment = .center
         glowLabel.translatesAutoresizingMaskIntoConstraints = false
         glowLabel.layer.shadowColor = UIColor(red: 0.95, green: 0.45, blue: 0.35, alpha: 1.0).cgColor
@@ -417,7 +424,7 @@ final class FlickeringGlowLabel: UIView {
         textLabel.text = text
         textLabel.numberOfLines = 0
         textLabel.textColor = UIColor(red: 0.95, green: 0.5, blue: 0.4, alpha: 1.0)
-        textLabel.font = UIFont.systemFont(ofSize: 13, weight: .medium)
+        textLabel.font = UIFont(name: "SourceSerif4Roman-Regular", size: 13) ?? UIFont(name: "SourceSerif418pt-Bold", size: 13) ?? UIFont.systemFont(ofSize: 13, weight: .medium)
         textLabel.textAlignment = .center
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(textLabel)
