@@ -42,9 +42,10 @@ struct ContentView: View {
         CardModel(color: .black, media: .image(name: "IMG_0265"), title: "Inner Orbit", subtitle: "Created in my early Procreate days, when silence was loud and the void, endless. It captures the feeling of chasing dreams, trusting the faint glow within, and moving forward with quiet, guarded hope. Just me, my armor, and a whisper: keep going."),
         CardModel(color: .black, media: .image(name: "warrior"), title: "Red Stands for Her", subtitle: "A tribute to every woman who bleeds, endures, and rises. The red isn't just battle, it's her body, her strength, her story. Drawn on Adobe Illustrator, born from quiet fire"),
         CardModel(color: .black, media: .image(name: "manny-1"), title: "Human, Not Holy", subtitle: "I'm a firm atheist, but a Shiva poster in a friend's room caught my eye. Not for the divinity, but the expression. I reimagined him not as a god, but as a human, raw, grounded, real. Drawn on Illustrator, from my lens, not faith."),
-        CardModel(color: .black, media: .image(name: "Star Lord"), title: "Star-Lord Energy", subtitle: "Not the strongest. Not the smartest. Definitely not the most loved. But stil he showed up, messed up, and somehow mattered. I sketched this on Illustrator as a salute to the chaos he wore like a badge.."),
-        CardModel(color: .black, media: .image(name: "Me and Blue"), title: "Me & Blue", subtitle: "The strongest of bond and the greatest of never ending love by this little fellow, whom I miss eversecond of my life, Drew this in procreate to hold on th the memories."),
+        CardModel(color: .black, media: .image(name: "Star Lord"), title: "Star-Lord Energy", subtitle: "Not the strongest. Not the smartest. Definitely not the most loved. But stil he showed up, messed up, and somehow mattered.I sketched this on Illustrator as a salute to the chaos he wore like a badge.."),
+        CardModel(color: .black, media: .image(name: "Me and Blue"), title: "Me & Blue", subtitle: "The strongest of bond and the greatest of never ending love by this little fellow, whom I miss eversecond of my life. Drew this in procreate to hold on th the memories."),
         CardModel(color: .black, media: .image(name: "Off the Clock"), title: "Off the Clock", subtitle: "Was searching for an Icon/Illustration to use for my Portfolio. Nothing suited, but an image caught my eye and illustrated myself in procreate laying on the clock hand to show I am working Off the Clock too"),
+        CardModel(color: .black, media: .image(name: "Coffee and Me"), title: "Coffee & Me", subtitle: "I have always been fond of black coffee since my Pune days and this was done in procreate to reflect that"),
     ]
     @State private var dragOffset: CGSize = .zero
     @State private var isDragging = false
@@ -70,7 +71,8 @@ struct ContentView: View {
         (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4), //eigth
         (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4), //ninth
         (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4),//tenth
-        (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4) //eleventh
+        (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4),
+        (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4) //twelfth
     ]
     
 
