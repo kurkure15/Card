@@ -396,43 +396,33 @@ struct AboutMeLink: View {
     }
 }
 
-/// Simple flow layout that wraps items to the next line
-struct FlowLayout: Layout {
-    var spacing: CGFloat = 8
+/// Bento grid cell for a tool
+struct BentoToolCell: View {
+    let icon: String
+    let name: String
+    let color: Color
+    var wide: Bool = false
 
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let result = layout(in: proposal.width ?? 0, subviews: subviews)
-        return result.size
-    }
+    var body: some View {
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 22, weight: .medium))
+                .foregroundColor(color)
 
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let result = layout(in: bounds.width, subviews: subviews)
-        for (index, position) in result.positions.enumerated() {
-            subviews[index].place(at: CGPoint(x: bounds.minX + position.x, y: bounds.minY + position.y), proposal: .unspecified)
+            Text(name)
+                .font(.custom("Inter", size: 11).weight(.medium))
+                .foregroundColor(Color.white.opacity(0.7))
         }
-    }
-
-    private func layout(in width: CGFloat, subviews: Subviews) -> (size: CGSize, positions: [CGPoint]) {
-        var positions: [CGPoint] = []
-        var x: CGFloat = 0
-        var y: CGFloat = 0
-        var rowHeight: CGFloat = 0
-        var maxWidth: CGFloat = 0
-
-        for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
-            if x + size.width > width && x > 0 {
-                x = 0
-                y += rowHeight + spacing
-                rowHeight = 0
-            }
-            positions.append(CGPoint(x: x, y: y))
-            rowHeight = max(rowHeight, size.height)
-            x += size.width + spacing
-            maxWidth = max(maxWidth, x)
-        }
-
-        return (CGSize(width: maxWidth, height: y + rowHeight), positions)
+        .frame(maxWidth: .infinity)
+        .frame(height: 80)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.white.opacity(0.06))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(Color.white.opacity(0.08), lineWidth: 0.5)
+                )
+        )
     }
 }
 
