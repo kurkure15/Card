@@ -43,7 +43,8 @@ struct ContentView: View {
         CardModel(color: .black, media: .image(name: "warrior"), title: "Red Stands for Her", subtitle: "A tribute to every woman who bleeds, endures, and rises. The red isn't just battle, it's her body, her strength, her story. Drawn on Adobe Illustrator, born from quiet fire"),
         CardModel(color: .black, media: .image(name: "manny-1"), title: "Human, Not Holy", subtitle: "I'm a firm atheist, but a Shiva poster in a friend's room caught my eye. Not for the divinity, but the expression. I reimagined him not as a god, but as a human, raw, grounded, real. Drawn on Illustrator, from my lens, not faith."),
         CardModel(color: .black, media: .image(name: "Star Lord"), title: "Star-Lord Energy", subtitle: "Not the strongest. Not the smartest. Definitely not the most loved. But stil he showed up, messed up, and somehow mattered. I sketched this on Illustrator as a salute to the chaos he wore like a badge.."),
-        
+        CardModel(color: .black, media: .image(name: "Me and Blue"), title: "Me & Blue", subtitle: "The strongest of bond and the greatest of never ending love by this little fellow, whom I miss eversecond of my life, Drew this in procreate to hold on th the memories."),
+        CardModel(color: .black, media: .image(name: "Off the Clock"), title: "Off the Clock", subtitle: "Was searching for an Icon/Illustration to use for my Portfolio. Nothing suited, but an image caught my eye and illustrated myself in procreate laying on the clock hand to show I am working Off the Clock too"),
     ]
     @State private var dragOffset: CGSize = .zero
     @State private var isDragging = false
@@ -52,6 +53,10 @@ struct ContentView: View {
     @State private var showFullScreen: Bool = false
     @State private var zoomAmount: CGFloat = 1.0
     @State private var selectedIndex: Int? = nil
+
+    // MARK: - Dynamic Gradient Colors
+    /// Colors extracted from the current card's image
+    @State private var gradientColors: DynamicColors = .defaultDark
 
     // Card properties for each position
     let cardConfigs: [(CGSize, CGSize, Double)] = [
@@ -63,7 +68,9 @@ struct ContentView: View {
         (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4), //sixth
         (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4),// seventh//
         (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4), //eigth
-        (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4) //ninth
+        (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4), //ninth
+        (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4),//tenth
+        (CGSize(width: 272, height: 324), CGSize(width: 5, height: -105), 4) //eleventh
     ]
     
 
@@ -72,10 +79,43 @@ struct ContentView: View {
         themeManager.currentTheme
     }
 
+    // MARK: - Color Extraction
+
+    /// Extract dominant colors from the current front card's image
+    private func extractColorsFromCurrentCard() {
+        guard let currentCard = cards.first else { return }
+
+        // Get image name based on media type
+        let imageName: String?
+        switch currentCard.media {
+        case .image(let name):
+            imageName = name
+        case .gif(let name):
+            imageName = name
+        case .video:
+            // For videos, use default dark colors
+            imageName = nil
+        }
+
+        // Extract colors if we have an image
+        if let name = imageName, let image = UIImage(named: name) {
+            ImageColorExtractor.extractColors(from: image, quality: .medium) { colors in
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    gradientColors = DynamicColors(colors: colors.asArray)
+                }
+            }
+        } else {
+            // Use default dark colors for videos
+            withAnimation(.easeInOut(duration: 0.5)) {
+                gradientColors = .defaultDark
+            }
+        }
+    }
+
     var body: some View {
         ZStack {
-            // Animated gradient background (Metal shader from Any Distance)
-            AnimatedGradientView(colorPalette: 4)
+            // Animated gradient background with colors from current card
+            AnimatedGradientView(colors: gradientColors)
                 .ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 0) {
@@ -145,6 +185,8 @@ struct ContentView: View {
                                                     dragOffset = .zero
                                                     isDragging = false
                                                 }
+                                                // Extract colors from the new front card
+                                                extractColorsFromCurrentCard()
                                             } else {
                                                 withAnimation(.spring()) {
                                                     dragOffset = .zero
@@ -194,6 +236,10 @@ struct ContentView: View {
                     }
                 }
             )
+        }
+        .onAppear {
+            // Extract colors from the initial front card
+            extractColorsFromCurrentCard()
         }
     }
 }

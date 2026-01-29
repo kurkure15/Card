@@ -3,32 +3,84 @@
 //  Card
 //
 //  Metal-based animated gradient inspired by Any Distance
+//  Supports dynamic colors extracted from images
 //
 
 import UIKit
 import MetalKit
 import SwiftUI
 
+// MARK: - Metal Color Struct (matches shader)
+
+/// Must match the DynamicColors struct in the Metal shader
+struct DynamicColors {
+    var color1: SIMD3<Float>
+    var color2: SIMD3<Float>
+    var color3: SIMD3<Float>
+    var color4: SIMD3<Float>
+
+    /// Create from UIColors
+    init(colors: [UIColor]) {
+        func toSIMD(_ color: UIColor) -> SIMD3<Float> {
+            var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+            color.getRed(&r, green: &g, blue: &b, alpha: &a)
+            return SIMD3<Float>(Float(r), Float(g), Float(b))
+        }
+
+        // Ensure we have at least 4 colors, pad with defaults if needed
+        let paddedColors = colors + Array(repeating: UIColor.black, count: max(0, 4 - colors.count))
+
+        self.color1 = toSIMD(paddedColors[0])
+        self.color2 = toSIMD(paddedColors[1])
+        self.color3 = toSIMD(paddedColors[2])
+        self.color4 = toSIMD(paddedColors[3])
+    }
+
+    /// Default dark purple palette
+    static let defaultDark = DynamicColors(colors: [
+        UIColor(red: 45/255, green: 20/255, blue: 60/255, alpha: 1),
+        UIColor(red: 80/255, green: 40/255, blue: 90/255, alpha: 1),
+        UIColor(red: 20/255, green: 10/255, blue: 30/255, alpha: 1),
+        UIColor(red: 60/255, green: 30/255, blue: 70/255, alpha: 1)
+    ])
+}
+
 // MARK: - SwiftUI Wrapper
 
 /// SwiftUI wrapper for the Metal gradient animation
 struct AnimatedGradientView: UIViewRepresentable {
-    /// Color palette index (0-4)
-    /// 0: Dark moody reds/oranges
-    /// 1: Ocean blues
-    /// 2: Teal/cyan
-    /// 3: Vibrant neon
-    /// 4: Dark purple (default for Card app)
-    var colorPalette: Int = 4
+    /// Dynamic colors for the gradient (extracted from image)
+    var colors: DynamicColors
+
+    /// Initialize with default dark colors
+    init() {
+        self.colors = .defaultDark
+    }
+
+    /// Initialize with custom colors
+    init(colors: DynamicColors) {
+        self.colors = colors
+    }
+
+    /// Initialize with UIColor array
+    init(uiColors: [UIColor]) {
+        self.colors = DynamicColors(colors: uiColors)
+    }
+
+    /// Initialize with ImageColors (from extractor)
+    init(imageColors: ImageColors) {
+        self.colors = DynamicColors(colors: imageColors.asArray)
+    }
 
     func makeUIView(context: Context) -> GradientAnimationMTKView {
         let view = GradientAnimationMTKView()
-        view.page = colorPalette
+        view.dynamicColors = colors
         return view
     }
 
     func updateUIView(_ uiView: GradientAnimationMTKView, context: Context) {
-        uiView.page = colorPalette
+        // Smoothly transition to new colors
+        uiView.setColors(colors, animated: true)
     }
 }
 
@@ -43,7 +95,18 @@ class GradientAnimationMTKView: UIView {
     private var vertexBuffer: MTLBuffer?
 
     private var time: Float = 0.0
-    var page: Int = 0
+
+    /// Current colors being rendered
+    var dynamicColors: DynamicColors = .defaultDark
+
+    /// Target colors for animation
+    private var targetColors: DynamicColors = .defaultDark
+
+    /// Color transition progress (0-1)
+    private var colorTransitionProgress: Float = 1.0
+
+    /// Previous colors for interpolation
+    private var previousColors: DynamicColors = .defaultDark
 
     private lazy var viewSize: [Float] = {
         return [
@@ -60,6 +123,19 @@ class GradientAnimationMTKView: UIView {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupMetal()
+    }
+
+    /// Set new colors with optional animation
+    func setColors(_ colors: DynamicColors, animated: Bool) {
+        if animated {
+            previousColors = dynamicColors
+            targetColors = colors
+            colorTransitionProgress = 0.0
+        } else {
+            dynamicColors = colors
+            targetColors = colors
+            colorTransitionProgress = 1.0
+        }
     }
 
     private func setupMetal() {
@@ -137,6 +213,42 @@ class GradientAnimationMTKView: UIView {
             Float(bounds.height * UIScreen.main.scale)
         ]
     }
+
+    /// Interpolate between two SIMD3 values
+    private func lerp(_ a: SIMD3<Float>, _ b: SIMD3<Float>, _ t: Float) -> SIMD3<Float> {
+        return a + (b - a) * t
+    }
+
+    /// Get interpolated colors for smooth transitions
+    private func getInterpolatedColors() -> DynamicColors {
+        let t = colorTransitionProgress
+        return DynamicColors(colors: [
+            UIColor(
+                red: CGFloat(lerp(previousColors.color1, targetColors.color1, t).x),
+                green: CGFloat(lerp(previousColors.color1, targetColors.color1, t).y),
+                blue: CGFloat(lerp(previousColors.color1, targetColors.color1, t).z),
+                alpha: 1
+            ),
+            UIColor(
+                red: CGFloat(lerp(previousColors.color2, targetColors.color2, t).x),
+                green: CGFloat(lerp(previousColors.color2, targetColors.color2, t).y),
+                blue: CGFloat(lerp(previousColors.color2, targetColors.color2, t).z),
+                alpha: 1
+            ),
+            UIColor(
+                red: CGFloat(lerp(previousColors.color3, targetColors.color3, t).x),
+                green: CGFloat(lerp(previousColors.color3, targetColors.color3, t).y),
+                blue: CGFloat(lerp(previousColors.color3, targetColors.color3, t).z),
+                alpha: 1
+            ),
+            UIColor(
+                red: CGFloat(lerp(previousColors.color4, targetColors.color4, t).x),
+                green: CGFloat(lerp(previousColors.color4, targetColors.color4, t).y),
+                blue: CGFloat(lerp(previousColors.color4, targetColors.color4, t).z),
+                alpha: 1
+            )
+        ])
+    }
 }
 
 // MARK: - MTKViewDelegate
@@ -149,6 +261,13 @@ extension GradientAnimationMTKView: MTKViewDelegate {
               let pipelineState = pipelineState,
               let vertexBuffer = vertexBuffer else {
             return
+        }
+
+        // Update color transition
+        if colorTransitionProgress < 1.0 {
+            colorTransitionProgress += 0.02 // ~0.8 second transition at 60fps
+            colorTransitionProgress = min(colorTransitionProgress, 1.0)
+            dynamicColors = getInterpolatedColors()
         }
 
         descriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1.0)
@@ -167,7 +286,10 @@ extension GradientAnimationMTKView: MTKViewDelegate {
         renderEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
         renderEncoder.setVertexBytes(&time, length: MemoryLayout<Float>.stride, index: 1)
         renderEncoder.setVertexBytes(&viewSize, length: MemoryLayout<Float>.stride * viewSize.count, index: 2)
-        renderEncoder.setVertexBytes(&page, length: MemoryLayout<Int>.stride, index: 3)
+
+        // Pass dynamic colors to fragment shader
+        var colors = dynamicColors
+        renderEncoder.setFragmentBytes(&colors, length: MemoryLayout<DynamicColors>.stride, index: 0)
 
         // Draw
         renderEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
@@ -188,6 +310,6 @@ extension GradientAnimationMTKView: MTKViewDelegate {
 // MARK: - Preview
 
 #Preview {
-    AnimatedGradientView(colorPalette: 4)
+    AnimatedGradientView()
         .ignoresSafeArea()
 }

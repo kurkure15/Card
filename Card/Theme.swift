@@ -60,7 +60,7 @@ extension Theme {
         name: "Light",
         backgroundColor: UIColor(hex: "ECECEC"),      // Light gray (your current bg)
         foregroundColor: UIColor(hex: "222222"),       // Dark text
-        secondaryForegroundColor: UIColor(hex: "717171"), // Gray for subtitles
+        secondaryForegroundColor: UIColor(hex: "C3C3C3"), // Gray for subtitles
         accentColor: UIColor(hex: "FF6B35")            // Warm orange accent
     )
 

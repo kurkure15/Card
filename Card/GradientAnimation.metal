@@ -3,6 +3,7 @@
 //  Card
 //
 //  Adapted from Any Distance's gradient animation
+//  Modified to support dynamic colors from images
 //
 
 #include <metal_stdlib>
@@ -16,7 +17,14 @@ struct VertexOut {
     float4 position [[position]];
     float time;
     float2 viewSize;
-    int page;
+};
+
+/// Custom colors passed from Swift (4 colors * 3 components = 12 floats)
+struct DynamicColors {
+    float3 color1;
+    float3 color2;
+    float3 color3;
+    float3 color4;
 };
 
 /// Noise functions for organic movement
@@ -54,18 +62,17 @@ float noise3(float seed1, float seed2, float seed3) {
 vertex VertexOut gradient_animation_vertex(const device packed_float3* in [[ buffer(0) ]],
                                            constant float &time [[buffer(1)]],
                                            const device packed_float2* viewSize [[buffer(2)]],
-                                           constant int &page [[buffer(3)]],
                                            unsigned int vid [[ vertex_id ]]) {
     VertexOut out;
     out.position = float4(in[vid], 1);
-    out.time = time + (float)page * 10.;
+    out.time = time;
     out.viewSize = float2(viewSize->x, viewSize->y);
-    out.page = page;
     return out;
 }
 
-/// Fragment shader for gradient animation
-fragment float4 gradient_animation_fragment(VertexOut in [[stage_in]]) {
+/// Fragment shader for gradient animation with dynamic colors
+fragment float4 gradient_animation_fragment(VertexOut in [[stage_in]],
+                                            constant DynamicColors &colors [[buffer(0)]]) {
     float2 st = in.position.xy/in.viewSize.xy;
     st = float2(tan(st.x), sin(st.y));
 
@@ -74,52 +81,13 @@ fragment float4 gradient_animation_fragment(VertexOut in [[stage_in]]) {
 
     float3 bg = float3(0.0);
 
-    float3 color1;
-    float3 color2;
-    float3 color3;
-    float3 color4;
-    float3 color5;
-
-    // Page 0: Dark moody reds/oranges
-    if (in.page == 0) {
-        color1 = float3(252.0/255.0, 60.0/255.0, 0.0/255.0);
-        color2 = float3(253.0/255.0, 0.0/255.0, 12.0/255.0);
-        color3 = float3(26.0/255.0, 0.5/255.0, 6.0/255.0);
-        color4 = float3(128.0/255.0, 0.0/255.0, 17.0/255.0);
-        color5 = float3(255.0/255.0, 15.0/255.0, 8.0/255.0);
-    }
-    // Page 1: Ocean blues
-    else if (in.page == 1) {
-        color1 = float3(183.0/255.0, 246.0/255.0, 254.0/255.0);
-        color2 = float3(50.0/255.0, 160.0/255.0, 251.0/255.0);
-        color3 = float3(3.0/255.0, 79.0/255.0, 231.0/255.0);
-        color4 = float3(1.0/255.0, 49.0/255.0, 161.0/255.0);
-        color5 = float3(3.0/255.0, 12.0/255.0, 47.0/255.0);
-    }
-    // Page 2: Teal/cyan
-    else if (in.page == 2) {
-        color1 = float3(102.0/255.0, 231.0/255.0, 255.0/255.0);
-        color2 = float3(4.0/255.0, 207.0/255.0, 213.0/255.0);
-        color3 = float3(0.0/255.0, 160.0/255.0, 119.0/255.0);
-        color4 = float3(0.0/255.0, 175.0/255.0, 139.0/255.0);
-        color5 = float3(2.0/255.0, 37.0/255.0, 27.0/255.0);
-    }
-    // Page 3: Vibrant neon
-    else if (in.page == 3) {
-        color1 = float3(255.0/255.0, 50.0/255.0, 134.0/255.0);
-        color2 = float3(236.0/255.0, 18.0/255.0, 60.0/255.0);
-        color3 = float3(178.0/255.0, 254.0/255.0, 0.0/255.0);
-        color4 = float3(0.0/255.0, 248.0/255.0, 209.0/255.0);
-        color5 = float3(0.0/255.0, 186.0/255.0, 255.0/255.0);
-    }
-    // Page 4: Dark purple/violet (custom for Card app)
-    else {
-        color1 = float3(45.0/255.0, 20.0/255.0, 60.0/255.0);
-        color2 = float3(80.0/255.0, 40.0/255.0, 90.0/255.0);
-        color3 = float3(20.0/255.0, 10.0/255.0, 30.0/255.0);
-        color4 = float3(60.0/255.0, 30.0/255.0, 70.0/255.0);
-        color5 = float3(10.0/255.0, 5.0/255.0, 15.0/255.0);
-    }
+    // Use dynamic colors passed from Swift
+    float3 color1 = colors.color1;
+    float3 color2 = colors.color2;
+    float3 color3 = colors.color3;
+    float3 color4 = colors.color4;
+    // Create a 5th color by mixing color1 and color3
+    float3 color5 = mix(color1, color3, 0.5);
 
     float mixValue = smoothstep(0.0, 0.8, distance(st,float2(sin(in.time/5.0)+0.5,sin(in.time/6.1)+0.5)));
     float3 outColor = mix(color1,bg,mixValue);
