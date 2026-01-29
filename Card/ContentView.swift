@@ -54,6 +54,7 @@ struct ContentView: View {
     @State private var showFullScreen: Bool = false
     @State private var zoomAmount: CGFloat = 1.0
     @State private var selectedIndex: Int? = nil
+    @State private var showAboutMe: Bool = false
 
     // MARK: - Dynamic Gradient Colors
     /// Colors extracted from the current card's image
@@ -138,6 +139,20 @@ struct ContentView: View {
                     .buttonStyle(.plain)
 
                     Spacer()
+
+                    // About Me button
+                    Button(action: {
+                        showAboutMe = true
+                    }) {
+                        Image(systemName: "person.crop.circle")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(theme.foreground)
+                    }
+                    .frame(width: 40, height: 40)
+                    .background(GlassButton(isDark: true))
+                    .buttonStyle(.plain)
                 }
                 .padding(.top, 24)
                 .padding(.horizontal, 16)
@@ -243,6 +258,181 @@ struct ContentView: View {
             // Extract colors from the initial front card
             extractColorsFromCurrentCard()
         }
+        .sheet(isPresented: $showAboutMe) {
+            AboutMeView()
+        }
+    }
+}
+
+// MARK: - About Me View
+
+struct AboutMeView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ZStack {
+            Color(hex: "0D0D0D").ignoresSafeArea()
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    // Header
+                    HStack {
+                        Spacer()
+                        Button(action: { dismiss() }) {
+                            Image(systemName: "xmark")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 10, height: 10)
+                                .foregroundColor(.white)
+                        }
+                        .frame(width: 36, height: 36)
+                        .background(GlassButton(isDark: true))
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.top, 16)
+
+                    // Name & role
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Ankur Yadav")
+                            .font(.system(size: 32, design: .serif))
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+
+                        Text("Senior Product Designer")
+                            .font(.custom("Inter", size: 16).weight(.medium))
+                            .foregroundColor(Color.white.opacity(0.6))
+                    }
+
+                    // Bio
+                    Text("I am currently working at PhysicsWallah and designing experience for their AI Products. Open to Freelance")
+                        .font(.custom("Inter", size: 15).weight(.regular))
+                        .foregroundColor(Color.white.opacity(0.75))
+                        .lineSpacing(5)
+
+                    // Tools bento grid
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("What I Use")
+                            .font(.custom("Inter", size: 14).weight(.semibold))
+                            .foregroundColor(Color.white.opacity(0.5))
+                            .textCase(.uppercase)
+                            .kerning(1.2)
+
+                        // Row 1: Procreate (wide) + Illustrator
+                        HStack(spacing: 10) {
+                            BentoToolCell(icon: "paintbrush.pointed.fill", name: "Procreate", color: Color(hex: "FF6B35"), wide: true)
+                            BentoToolCell(icon: "pencil.and.outline", name: "Illustrator", color: Color(hex: "FF9A00"))
+                        }
+
+                        // Row 2: After Effects + Figma (wide)
+                        HStack(spacing: 10) {
+                            BentoToolCell(icon: "film.stack", name: "After Effects", color: Color(hex: "9999FF"))
+                            BentoToolCell(icon: "square.on.square.intersection.dashed", name: "Figma", color: Color(hex: "A259FF"), wide: true)
+                        }
+
+                        // Row 3: SwiftUI (wide) + Xcode
+                        HStack(spacing: 10) {
+                            BentoToolCell(icon: "swift", name: "SwiftUI", color: Color(hex: "F05138"), wide: true)
+                            BentoToolCell(icon: "hammer.fill", name: "Xcode", color: Color(hex: "147EFB"))
+                        }
+                    }
+
+                    // Links section
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Find Me")
+                            .font(.custom("Inter", size: 14).weight(.semibold))
+                            .foregroundColor(Color.white.opacity(0.5))
+                            .textCase(.uppercase)
+                            .kerning(1.2)
+
+                        VStack(spacing: 0) {
+                            AboutMeLink(icon: "envelope.fill", label: "Email", value: "kurkure15@gmail.com")
+                            Divider().background(Color.white.opacity(0.1))
+                            AboutMeLink(icon: "link", label: "GitHub", value: "github.com/kurkure15")
+                        }
+                        .background(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .fill(Color.white.opacity(0.06))
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    }
+
+                    Spacer(minLength: 40)
+                }
+                .padding(.horizontal, 20)
+            }
+        }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(Color(hex: "0D0D0D"))
+    }
+}
+
+// MARK: - About Me Helpers
+
+struct AboutMeLink: View {
+    let icon: String
+    let label: String
+    let value: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 14))
+                .foregroundColor(Color.white.opacity(0.5))
+                .frame(width: 20)
+
+            Text(label)
+                .font(.custom("Inter", size: 14).weight(.medium))
+                .foregroundColor(.white)
+
+            Spacer()
+
+            Text(value)
+                .font(.custom("Inter", size: 13).weight(.regular))
+                .foregroundColor(Color.white.opacity(0.5))
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+    }
+}
+
+/// Simple flow layout that wraps items to the next line
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let result = layout(in: proposal.width ?? 0, subviews: subviews)
+        return result.size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let result = layout(in: bounds.width, subviews: subviews)
+        for (index, position) in result.positions.enumerated() {
+            subviews[index].place(at: CGPoint(x: bounds.minX + position.x, y: bounds.minY + position.y), proposal: .unspecified)
+        }
+    }
+
+    private func layout(in width: CGFloat, subviews: Subviews) -> (size: CGSize, positions: [CGPoint]) {
+        var positions: [CGPoint] = []
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+        var rowHeight: CGFloat = 0
+        var maxWidth: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if x + size.width > width && x > 0 {
+                x = 0
+                y += rowHeight + spacing
+                rowHeight = 0
+            }
+            positions.append(CGPoint(x: x, y: y))
+            rowHeight = max(rowHeight, size.height)
+            x += size.width + spacing
+            maxWidth = max(maxWidth, x)
+        }
+
+        return (CGSize(width: maxWidth, height: y + rowHeight), positions)
     }
 }
 
