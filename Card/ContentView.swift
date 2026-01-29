@@ -317,22 +317,50 @@ struct AboutMeView: View {
                             .textCase(.uppercase)
                             .kerning(1.2)
 
-                        // Row 1: Procreate (wide) + Illustrator
-                        HStack(spacing: 10) {
-                            BentoToolCell(icon: "paintbrush.pointed.fill", name: "Procreate", color: Color(hex: "FF6B35"), wide: true)
-                            BentoToolCell(icon: "pencil.and.outline", name: "Illustrator", color: Color(hex: "FF9A00"))
+                        let spacing: CGFloat = 10
+
+                        // Row 1
+                        HStack(spacing: spacing) {
+                            BentoToolCell(assetIcon: "Procreate", name: "Procreate", gradientColors: [
+                                UIColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1),
+                                UIColor(red: 0.15, green: 0.08, blue: 0.0, alpha: 1),
+                                UIColor(red: 0.05, green: 0.05, blue: 0.05, alpha: 1),
+                                UIColor(red: 0.12, green: 0.06, blue: 0.0, alpha: 1)
+                            ])
+                            BentoToolCell(assetIcon: "Adobe Illustrator", name: "Illustrator", gradientColors: [
+                                UIColor(red: 0.15, green: 0.06, blue: 0.0, alpha: 1),
+                                UIColor(red: 0.1, green: 0.04, blue: 0.0, alpha: 1),
+                                UIColor(red: 0.08, green: 0.03, blue: 0.0, alpha: 1),
+                                UIColor(red: 0.12, green: 0.05, blue: 0.0, alpha: 1)
+                            ])
+                            BentoToolCell(assetIcon: "Adobe Photoshop", name: "Photoshop", gradientColors: [
+                                UIColor(red: 0.0, green: 0.05, blue: 0.15, alpha: 1),
+                                UIColor(red: 0.0, green: 0.08, blue: 0.12, alpha: 1),
+                                UIColor(red: 0.0, green: 0.03, blue: 0.1, alpha: 1),
+                                UIColor(red: 0.0, green: 0.06, blue: 0.14, alpha: 1)
+                            ])
                         }
 
-                        // Row 2: After Effects + Figma (wide)
-                        HStack(spacing: 10) {
-                            BentoToolCell(icon: "film.stack", name: "After Effects", color: Color(hex: "9999FF"))
-                            BentoToolCell(icon: "square.on.square.intersection.dashed", name: "Figma", color: Color(hex: "A259FF"), wide: true)
-                        }
-
-                        // Row 3: SwiftUI (wide) + Xcode
-                        HStack(spacing: 10) {
-                            BentoToolCell(icon: "swift", name: "SwiftUI", color: Color(hex: "F05138"), wide: true)
-                            BentoToolCell(icon: "hammer.fill", name: "Xcode", color: Color(hex: "147EFB"))
+                        // Row 2
+                        HStack(spacing: spacing) {
+                            BentoToolCell(assetIcon: "After Effects", name: "After Effects", gradientColors: [
+                                UIColor(red: 0.08, green: 0.04, blue: 0.15, alpha: 1),
+                                UIColor(red: 0.12, green: 0.06, blue: 0.18, alpha: 1),
+                                UIColor(red: 0.05, green: 0.02, blue: 0.1, alpha: 1),
+                                UIColor(red: 0.1, green: 0.05, blue: 0.14, alpha: 1)
+                            ])
+                            BentoToolCell(assetIcon: "Figma", name: "Figma", gradientColors: [
+                                UIColor(red: 0.1, green: 0.02, blue: 0.08, alpha: 1),
+                                UIColor(red: 0.06, green: 0.0, blue: 0.12, alpha: 1),
+                                UIColor(red: 0.08, green: 0.01, blue: 0.06, alpha: 1),
+                                UIColor(red: 0.05, green: 0.0, blue: 0.1, alpha: 1)
+                            ])
+                            BentoToolCell(assetIcon: "Xcode", name: "Xcode", gradientColors: [
+                                UIColor(red: 0.0, green: 0.06, blue: 0.15, alpha: 1),
+                                UIColor(red: 0.0, green: 0.1, blue: 0.12, alpha: 1),
+                                UIColor(red: 0.0, green: 0.04, blue: 0.1, alpha: 1),
+                                UIColor(red: 0.0, green: 0.08, blue: 0.14, alpha: 1)
+                            ])
                         }
                     }
 
@@ -396,33 +424,41 @@ struct AboutMeLink: View {
     }
 }
 
-/// Bento grid cell for a tool
+/// Bento grid cell for a tool with animated gradient background
 struct BentoToolCell: View {
-    let icon: String
+    let assetIcon: String
     let name: String
-    let color: Color
-    var wide: Bool = false
+    let gradientColors: [UIColor]
 
     var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.system(size: 22, weight: .medium))
-                .foregroundColor(color)
+        VStack(spacing: 6) {
+            Image(assetIcon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 30, height: 30)
 
             Text(name)
-                .font(.custom("Inter", size: 11).weight(.medium))
-                .foregroundColor(Color.white.opacity(0.7))
+                .font(.custom("Inter", size: 10).weight(.medium))
+                .foregroundColor(Color.white.opacity(0.8))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 80)
+        .frame(height: 90)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color.white.opacity(0.06))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .strokeBorder(Color.white.opacity(0.08), lineWidth: 0.5)
-                )
+            ZStack {
+                AnimatedGradientView(uiColors: gradientColors)
+
+                // Subtle overlay for depth
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(Color.black.opacity(0.15))
+
+                // Border
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 0.5)
+            }
         )
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }
 
