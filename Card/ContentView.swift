@@ -185,6 +185,9 @@ struct ContentView: View {
                                 .frame(width: config.0.width, height: config.0.height)
                                 .offset(x: config.1.width, y: config.1.height)
                                 .rotationEffect(.degrees(config.2))
+                                .if(idx == 0) { view in
+                                    view.parallaxEffect(magnitude: 8)
+                                }
                                 .zIndex(Double(2 - idx))
                                 .offset(idx == 0 ? dragOffset : .zero)
                                 .gesture(
